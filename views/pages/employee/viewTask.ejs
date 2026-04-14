@@ -1,0 +1,126 @@
+<%- include('../../partials/header.ejs') %>
+
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+
+            <div class="page-header">
+                <h5>My Tasks</h5>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Task Name</th>
+                                    <th>Description</th>
+                                    <th>Assigned TO</th>
+                                    <th>created BY</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <% if(tasks && tasks.length> 0){ %>
+
+                                    <% tasks.forEach((task, index)=> { %>
+
+                                        <tr>
+                                            <td>
+                                                <%= index + 1 %>
+                                            </td>
+                                            <td>
+                                                <%= task.name %>
+                                            </td>
+                                            <td>
+                                                <%= task.description %>
+                                            </td>
+
+                                            <td>
+                                                <%= task.assignedTo?.name || 'Admin' %>
+                                            </td>
+                                            <td>
+
+                                                <%= task.createdBy?.name || 'Admin' %>
+                                            </td>
+
+
+                                            <td>
+                                                <span class="badge bg-info text-dark">
+                                                    <%= task.status %>
+                                                </span>
+                                            </td>
+                                            <td>
+
+                                                <% if(user && user.role==='admin' ) { %>
+
+                                                    <a href="/admin/editTask/<%= task._id %>"
+                                                        class="btn btn-info btn-sm">
+                                                        Edit
+                                                    </a>
+
+                                                    <a href="/admin/deleteTask/<%= task._id %>"
+                                                        class="btn btn-danger btn-sm">
+                                                        Delete
+                                                    </a>
+
+                                                    <% if(task.status==='pending approval' ) { %>
+                                                        <a href="/admin/approve/<%= task._id %>"
+                                                            class="btn btn-success btn-sm">
+                                                            Approve
+                                                        </a>
+                                                        <% } %>
+
+                                                            <% } else { %>
+
+                                                                <% if(task.status==='pending' ) { %>
+                                                                    <a href="/employee/start/<%= task._id %>"
+                                                                        class="btn btn-primary btn-sm">
+                                                                        Start
+                                                                    </a>
+
+                                                                    <% } else if(task.status==='in progress' ) { %>
+                                                                        <a href="/employee/complete-request/<%= task._id %>"
+                                                                            class="btn btn-warning btn-sm">
+                                                                            Request Done
+                                                                        </a>
+
+                                                                        <% } else { %>
+                                                                            <span class="btn btn-success btn-sm">
+                                                                                <%= task.status %>
+                                                                            </span>
+                                                                            <% } %>
+
+                                                                                <% } %>
+
+                                            </td>
+                                        </tr>
+
+                                        <% }) %>
+
+                                            <% } else { %>
+
+                                                <tr>
+                                                    <td colspan="6">No Tasks Found</td>
+                                                </tr>
+
+                                                <% } %>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <%- include('../../partials/footer.ejs') %>

@@ -1,0 +1,148 @@
+<%- include('../../partials/header.ejs') %>
+
+    <section class="pcoded-main-container">
+        <div class="pcoded-content">
+
+            <!-- Header -->
+            <div class="page-header">
+                <h5>All Tasks</h5>
+            </div>
+
+            <!-- Card -->
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- 🔍 Search -->
+                    <form method="GET" action="/admin/viewTasks" class="mb-3 d-flex">
+                        <input type="text" name="search" class="form-control me-2" placeholder="Search task..."
+                            value="<%= search || '' %>">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+
+                    <!-- ➕ Add Task -->
+                    <div class="d-flex justify-content-between mb-3">
+                        <h4>Task List</h4>
+                        <a href="/admin/addTask" class="btn btn-success">+ Add Task</a>
+                    </div>
+
+                    <!-- 📊 Table -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Task Name</th>
+                                    <th>Description</th>
+                                    <th>Assigned To</th>
+                                    <th>Assigned By</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <% if (tasks && tasks.length> 0) { %>
+
+                                    <% tasks.forEach((task, index)=> { %>
+                                        <tr>
+
+                                            <!-- Index -->
+                                            <td>
+                                                <%= (currentPage - 1) * 5 + index + 1 %>
+                                            </td>
+
+                                            <!-- Name -->
+                                            <td>
+                                                <%= task.name %>
+                                            </td>
+
+                                            <!-- Description -->
+                                            <td>
+                                                <%= task.description %>
+                                            </td>
+
+                                            <!-- Assigned To -->
+                                            <td>
+                                                <%= task.assignedTo?.name || 'N/A' %>
+                                            </td>
+
+                                            <!-- Assigned By (FIXED) -->
+                                            <td>
+                                                <%= task.createdBy?.name || 'N/A' %>
+                                            </td>
+
+                                            <!-- Status -->
+                                            <td>
+                                                <% if(task.status==='pending approval' ) { %>
+                                                    <span class="badge bg-warning">Request Pending</span>
+                                                    <% } else if(task.status==='completed' ) { %>
+                                                        <span class="badge bg-success">Completed</span>
+                                                        <% } else { %>
+                                                            <span class="badge bg-info">
+                                                                <%= task.status %>
+                                                            </span>
+                                                            <% } %>
+                                            </td>
+
+                                            <!-- Actions -->
+                                            <td>
+
+                                                <!-- Edit -->
+                                                <a href="/admin/editTask/<%= task._id %>" class="btn btn-sm btn-info">
+                                                    Edit
+                                                </a>
+
+                                                <!-- Delete -->
+                                                <a href="/admin/deleteTask/<%= task._id %>"
+                                                    class="btn btn-sm btn-danger">
+                                                    Delete
+                                                </a>
+                                                <% if(task.status === 'pending approval') { %>
+    <a href="/admin/approve/<%= task._id %>" class="btn btn-success btn-sm">
+        Approve
+    </a>
+<% } %>
+                                            </td>
+
+                                        </tr>
+                                        <% }) %>
+
+                                            <% } else { %>
+
+                                                <tr>
+                                                    <td colspan="7">No Tasks Found</td>
+                                                </tr>
+
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 🔁 Pagination -->
+                    <div class="d-flex justify-content-center mt-3">
+
+                        <% if (currentPage> 1) { %>
+                            <a href="?page=<%= currentPage - 1 %>&search=<%= search %>"
+                                class="btn btn-outline-primary me-2">
+                                Prev
+                            </a>
+                            <% } %>
+
+                                <span class="btn btn-light">
+                                    Page <%= currentPage %>
+                                </span>
+
+                                <a href="?page=<%= currentPage + 1 %>&search=<%= search %>"
+                                    class="btn btn-outline-primary ms-2">
+                                    Next
+                                </a>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <%- include('../../partials/footer.ejs') %>
