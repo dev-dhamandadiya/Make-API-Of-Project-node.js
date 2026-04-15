@@ -5,6 +5,7 @@ import Task from '../models/task.model.js';
 
 const adminController = {
 
+    // ================= DASHBOARD =================
     dashboard(req, res) {
         if (!req.user) return res.redirect('/admin/login');
 
@@ -13,6 +14,7 @@ const adminController = {
         });
     },
 
+    // ================= AUTH =================
     signupPage(req, res) {
         res.render('pages/admin/signup');
     },
@@ -27,10 +29,8 @@ const adminController = {
             await User.create(req.body);
 
             return res.redirect('/admin/login');
-
         } catch (error) {
             console.error(error);
-            res.status(500).send('Error creating admin');
         }
     },
 
@@ -43,36 +43,28 @@ const adminController = {
             const { email, password } = req.body;
 
             const user = await User.findOne({ email });
-
             if (!user) return res.redirect('/admin/login');
 
             const isMatch = await bcrypt.compare(password, user.password);
-
             if (!isMatch) return res.redirect('/admin/login');
 
-            const token = jwt.sign(
-                {
-                    id: user._id,
-                    name: user.name,
-                    role: user.role
-                },
-                'secret',
-                { expiresIn: '1d' }
-            );
+            const token = jwt.sign({
+                id: user._id,
+                name: user.name,
+                role: user.role
+            }, 'secret', { expiresIn: '1d' });
 
             res.cookie('token', token);
 
-            if (user.role === 'admin') {
+            // 🔥 ROLE BASED REDIRECT
+            if (user.role === 'admin' || user.role === 'manager') {
                 return res.redirect('/admin/dashboard');
-            } else if (user.role === 'employee') {
-                return res.redirect('/employee/dashboard');
             } else {
-                return res.redirect('/admin/login');
+                return res.redirect('/employee/dashboard');
             }
 
         } catch (error) {
             console.error(error);
-            return res.redirect('/admin/login');
         }
     },
 
@@ -81,223 +73,153 @@ const adminController = {
         return res.redirect('/admin/login');
     },
 
+    // ================= EMPLOYEE / MANAGER =================
     createEmployeePage(req, res) {
-        res.render('pages/admin/createEmployee');
-    },
-
-    async createEmployee(req, res) {
-        try {
-            const { password } = req.body;
-
-            req.body.password = await bcrypt.hash(password, 10);
-            req.body.role = 'employee';
-
-            await User.create(req.body);
-
-            return res.redirect('/admin/viewEmployees');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error creating employee');
-        }
-    },
-
-    async viewEmployees(req, res) {
-        try {
-            const employees = await User.find({ role: 'employee' });
-
-            res.render('pages/admin/viewEmployees', {
-                employees
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error fetching employees');
-        }
-    },
-
-    async editEmployeePage(req, res) {
-        try {
-            const employee = await User.findById(req.params.id);
-
-            res.render('pages/admin/editEmployee', {
-                employee
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error fetching employee');
-        }
-    },
-
-    async editEmployee(req, res) {
-        try {
-            const { password } = req.body;
-
-            if (password) {
-                req.body.password = await bcrypt.hash(password, 10);
-            }
-
-            await User.findByIdAndUpdate(req.params.id, req.body);
-
-            return res.redirect('/admin/viewEmployees');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error updating employee');
-        }
-    },
-
-    async deleteEmployee(req, res) {
-        try {
-            await User.findByIdAndDelete(req.params.id);
-
-            return res.redirect('/admin/viewEmployees');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error deleting employee');
-        }
-    },
-
-    async addTaskPage(req, res) {
-        try {
-            const employees = await User.find({ role: 'employee' });
-
-            res.render('pages/admin/addTask', {
-                employees
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error loading page');
-        }
-    },
-
-    async addTask(req, res) {
-        try {
-            const { name, description, assignedTo } = req.body;
-
-            await Task.create({
-                name,
-                description,
-                assignedTo,
-                createdBy: req.user.id
-            });
-
-            return res.redirect('/admin/viewTasks');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error creating task');
-        }
-    },
-
-    async viewTasks(req, res) {
-        try {
-            const search = req.query.search || '';
-            const page = parseInt(req.query.page) || 1;
-            const limit = 5;
-            const skip = (page - 1) * limit;
-
-            let query = {
-                name: { $regex: search, $options: 'i' }
-            };
-
-            if (req.user.role === 'employee') {
-                query.assignedTo = req.user.id;
-            }
-
-            const tasks = await Task.find(query)
-                .populate('createdBy')
-                .populate('assignedTo')
-                .skip(skip)
-                .limit(limit);
-
-            res.render('pages/admin/viewTasks', {
-                tasks,
-                user: req.user,
-                search,
-                currentPage: page,
-                user: req.user
-            });
-
-        } catch (error) {
-            console.log(error);
-            res.status(500).send("Error loading tasks");
-        }
-    },
-
-    async editTaskPage(req, res) {
-        try {
-            const task = await Task.findById(req.params.id);
-            const employees = await User.find({ role: 'employee' });
-
-            res.render('pages/admin/editTask', {
-                task,
-                employees
-            });
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error fetching task');
-        }
-    },
-
-    async editTask(req, res) {
-        try {
-            if (req.user.role !== 'admin') {
-                return res.status(403).send('Access Denied');
-            }
-
-            const { name, description, assignedTo, createdBy } = req.body;
-
-            await Task.findByIdAndUpdate(req.params.id, {
-                name,
-                description,
-                assignedTo,
-                createdBy
-            });
-
-            return res.redirect('/admin/viewTasks');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error updating task');
-        }
-    },
-
-    async deleteTask(req, res) {
-        try {
-            if (req.user.role !== 'admin') {
-                return res.status(403).send('Access Denied');
-            }
-
-            await Task.findByIdAndDelete(req.params.id);
-
-            return res.redirect('/admin/viewTasks');
-
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Error deleting task');
-        }
-    },
-    async viewRequests(req, res) {
-        const tasks = await Task.find({
-            status: "pending approval"
-        })
-            .populate("assignedTo")
-            .populate("createdBy");
-
-        res.render("pages/admin/taskRequests", {
-            tasks,
+        res.render('pages/admin/createEmployee', {
             user: req.user
         });
     },
 
-   async approveTask(req, res) {
-    try {
+    async createEmployee(req, res) {
+        try {
+            if (req.user.role !== 'admin') {
+                return res.status(403).send('Only Admin Allowed');
+            }
+
+            const { password, role } = req.body;
+
+            req.body.password = await bcrypt.hash(password, 10);
+            req.body.role = role || 'employee'; // employee OR manager
+
+            await User.create(req.body);
+
+            return res.redirect('/admin/viewEmployees');
+        } catch (error) {
+            console.error(error);
+        }
+    },
+
+    async viewEmployees(req, res) {
+        const employees = await User.find({
+            role: { $in: ['employee', 'manager'] }
+        });
+
+        res.render('pages/admin/viewEmployees', {
+            employees,
+            user: req.user
+        });
+    },
+
+    async deleteEmployee(req, res) {
         if (req.user.role !== 'admin') {
+            return res.status(403).send('Only Admin Allowed');
+        }
+
+        await User.findByIdAndDelete(req.params.id);
+        return res.redirect('/admin/viewEmployees');
+    },
+
+    async editEmployeePage(req, res) {
+        const employee = await User.findById(req.params.id);
+
+        res.render('pages/admin/editEmployee', {
+            employee,
+            user: req.user
+        });
+    },
+
+    async editEmployee(req, res) {
+        const { password } = req.body;
+
+        if (password) {
+            req.body.password = await bcrypt.hash(password, 10);
+        }
+
+        await User.findByIdAndUpdate(req.params.id, req.body);
+        return res.redirect('/admin/viewEmployees');
+    },
+
+    // ================= TASK =================
+    async addTaskPage(req, res) {
+        const employees = await User.find({
+            role: { $in: ['employee', 'manager'] }
+        });
+
+        res.render('pages/admin/addTask', {
+            employees,
+            user: req.user
+        });
+    },
+
+    async addTask(req, res) {
+        const { name, description, assignedTo } = req.body;
+
+        await Task.create({
+            name,
+            description,
+            assignedTo,
+            createdBy: req.user.id
+        });
+
+        return res.redirect('/admin/viewTasks');
+    },
+
+    async viewTasks(req, res) {
+        const search = req.query.search || '';
+
+        let query = {
+            name: { $regex: search, $options: 'i' }
+        };
+
+        // 👇 employee only own tasks
+        if (req.user.role === 'employee') {
+            query.assignedTo = req.user.id;
+        }
+
+        const tasks = await Task.find(query)
+            .populate('createdBy')
+            .populate('assignedTo');
+
+        res.render('pages/admin/viewTasks', {
+            tasks,
+            user: req.user,
+            search
+        });
+    },
+
+    async editTaskPage(req, res) {
+        const task = await Task.findById(req.params.id);
+        const employees = await User.find({
+            role: { $in: ['employee', 'manager'] }
+        });
+
+        res.render('pages/admin/editTask', {
+            task,
+            employees,
+            user: req.user
+        });
+    },
+
+    async editTask(req, res) {
+        if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+            return res.status(403).send('Access Denied');
+        }
+
+        await Task.findByIdAndUpdate(req.params.id, req.body);
+        return res.redirect('/admin/viewTasks');
+    },
+
+    async deleteTask(req, res) {
+        if (req.user.role !== 'admin' && req.user.role !== 'manager') {
+            return res.status(403).send('Access Denied');
+        }
+
+        await Task.findByIdAndDelete(req.params.id);
+        return res.redirect('/admin/viewTasks');
+    },
+
+    async approveTask(req, res) {
+        if (req.user.role !== 'admin' && req.user.role !== 'manager') {
             return res.status(403).send('Access Denied');
         }
 
@@ -306,12 +228,8 @@ const adminController = {
         });
 
         return res.redirect('/admin/viewTasks');
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).send('Error approving task');
     }
-}
+
 };
 
 export default adminController;

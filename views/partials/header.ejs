@@ -20,7 +20,7 @@
 		</div>
 	</div>
 
-	<!-- Sidebar -->
+	<!-- ================= SIDEBAR ================= -->
 	<nav class="pcoded-navbar menu-light">
 
 		<div class="navbar-wrapper">
@@ -40,81 +40,83 @@
 				<!-- MENU -->
 				<ul class="nav pcoded-inner-navbar">
 
+					<!-- DASHBOARD -->
 					<li class="nav-item">
-						<a href="/admin/dashboard" class="nav-link">
+						<% if(user.role === 'employee') { %>
+							<a href="/employee/dashboard" class="nav-link">
+						<% } else { %>
+							<a href="/admin/dashboard" class="nav-link">
+						<% } %>
+						
 							<span class="pcoded-micon"><i class="feather icon-home"></i></span>
 							<span class="pcoded-mtext">Dashboard</span>
 						</a>
 					</li>
 
 					<!-- ================= EMPLOYEES ================= -->
-					<% if (user && (user.role==='admin' || user.role==='manager' )) { %>
+					<% if (user.role === 'admin' || user.role === 'manager') { %>
 
-						<li class="nav-item pcoded-hasmenu">
-							<a href="#!" class="nav-link">
-								<span class="pcoded-micon"><i class="feather icon-users"></i></span>
-								<span class="pcoded-mtext">Employees</span>
-							</a>
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!" class="nav-link">
+							<span class="pcoded-micon"><i class="feather icon-users"></i></span>
+							<span class="pcoded-mtext">Employees</span>
+						</a>
 
-							<ul class="pcoded-submenu">
+						<ul class="pcoded-submenu">
 
-								<% if (user.role==='admin' ) { %>
-									<li><a href="/admin/createEmployee">Add Employee</a></li>
-									<% } %>
+							<% if (user.role === 'admin') { %>
+								<li><a href="/admin/createEmployee">Add Employee</a></li>
+							<% } %>
 
-										<li><a href="/admin/viewEmployees">View Employees</a></li>
+							<li><a href="/admin/viewEmployees">View Employees</a></li>
 
-							</ul>
-						</li>
+						</ul>
+					</li>
 
-						<% } %>
+					<% } %>
 
-							<!-- ================= TASKS ================= -->
-							<% if (user) { %>
+					<!-- ================= TASKS ================= -->
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!">
+							<span class="pcoded-micon"><i class="feather icon-clipboard"></i></span>
+							<span class="pcoded-mtext">Tasks</span>
+						</a>
 
-								<li class="nav-item pcoded-hasmenu">
-									<a href="#!">
-										<span class="pcoded-micon"><i class="feather icon-clipboard"></i></span>
-										<span class="pcoded-mtext">Tasks</span>
-									</a>
+						<ul class="pcoded-submenu">
 
-									<ul class="pcoded-submenu">
+							<!-- ADMIN + MANAGER -->
+							<% if (user.role === 'admin' || user.role === 'manager') { %>
+								<li><a href="/admin/addTask">Add Task</a></li>
+								<li><a href="/admin/viewTasks">View Tasks</a></li>
+							<% } %>
 
-										<!-- Admin / Manager -->
-										<% if (user.role !=='employee' ) { %>
-											<li><a href="/admin/addTask">Add Task</a></li>
-											<li><a href="/admin/viewTasks">View Tasks</a></li>
-											<% } %>
+							<!-- EMPLOYEE -->
+							<% if (user.role === 'employee') { %>
+								<li><a href="/employee/tasks">My Tasks</a></li>
+							<% } %>
 
-												<!-- Employee -->
-												<% if (user.role==='employee' ) { %>
-													<li><a href="/employee/tasks">My Tasks</a></li>
-													<% } %>
+						</ul>
+					</li>
 
-									</ul>
-								</li>
+					<!-- ================= AUTH ================= -->
+					<li class="nav-item pcoded-hasmenu">
+						<a href="#!">
+							<span class="pcoded-micon"><i class="feather icon-lock"></i></span>
+							<span class="pcoded-mtext">Authentication</span>
+						</a>
 
-								<% } %>
-
-									<!-- ================= AUTH ================= -->
-									<li class="nav-item pcoded-hasmenu">
-										<a href="#!">
-											<span class="pcoded-micon"><i class="feather icon-lock"></i></span>
-											<span class="pcoded-mtext">Authentication</span>
-										</a>
-
-										<ul class="pcoded-submenu">
-											<li><a href="/admin/login">Login</a></li>
-											<li><a href="/admin/signup">Signup</a></li>
-										</ul>
-									</li>
+						<ul class="pcoded-submenu">
+							<li><a href="/admin/login">Login</a></li>
+							<li><a href="/admin/signup">Signup</a></li>
+						</ul>
+					</li>
 
 				</ul>
 			</div>
 		</div>
 	</nav>
 
-	<!-- HEADER TOP BAR -->
+	<!-- ================= TOP HEADER ================= -->
 	<header class="navbar pcoded-header navbar-expand-lg navbar-light header-blue">
 
 		<div class="m-header">
@@ -139,10 +141,11 @@
 
 						<div class="pro-head">
 							<span>
-								<%= user?.name %>
+								<%= user?.name %> (<%= user?.role %>)
 							</span>
 						</div>
 
+						<!-- LOGOUT -->
 						<a href="/admin/logout" class="dropdown-item">
 							<i class="feather icon-log-out"></i> Logout
 						</a>

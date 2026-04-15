@@ -12,20 +12,17 @@
             <div class="card">
                 <div class="card-body">
 
-                    <!-- 🔍 Search -->
                     <form method="GET" action="/admin/viewTasks" class="mb-3 d-flex">
                         <input type="text" name="search" class="form-control me-2" placeholder="Search task..."
                             value="<%= search || '' %>">
                         <button type="submit" class="btn btn-primary">Search</button>
                     </form>
 
-                    <!-- ➕ Add Task -->
                     <div class="d-flex justify-content-between mb-3">
                         <h4>Task List</h4>
                         <a href="/admin/addTask" class="btn btn-success">+ Add Task</a>
                     </div>
 
-                    <!-- 📊 Table -->
                     <div class="table-responsive">
                         <table class="table table-bordered text-center">
                             <thead class="table-dark">
@@ -48,7 +45,7 @@
 
                                             <!-- Index -->
                                             <td>
-                                                <%= (currentPage - 1) * 5 + index + 1 %>
+                                                <%= index + 1 %>
                                             </td>
 
                                             <!-- Name -->
@@ -97,11 +94,12 @@
                                                     class="btn btn-sm btn-danger">
                                                     Delete
                                                 </a>
-                                                <% if(task.status === 'pending approval') { %>
-    <a href="/admin/approve/<%= task._id %>" class="btn btn-success btn-sm">
-        Approve
-    </a>
-<% } %>
+                                                <% if(user.role==='admin' && task.status==='pending approval' ) { %>
+                                                    <a href="/admin/approve/<%= task._id %>"
+                                                        class="btn btn-success btn-sm">
+                                                        Approve
+                                                    </a>
+                                                    <% } %>
                                             </td>
 
                                         </tr>
@@ -116,27 +114,6 @@
                                                 <% } %>
                             </tbody>
                         </table>
-                    </div>
-
-                    <!-- 🔁 Pagination -->
-                    <div class="d-flex justify-content-center mt-3">
-
-                        <% if (currentPage> 1) { %>
-                            <a href="?page=<%= currentPage - 1 %>&search=<%= search %>"
-                                class="btn btn-outline-primary me-2">
-                                Prev
-                            </a>
-                            <% } %>
-
-                                <span class="btn btn-light">
-                                    Page <%= currentPage %>
-                                </span>
-
-                                <a href="?page=<%= currentPage + 1 %>&search=<%= search %>"
-                                    class="btn btn-outline-primary ms-2">
-                                    Next
-                                </a>
-
                     </div>
 
                 </div>
