@@ -1,8 +1,6 @@
 <%- include('../../partials/header.ejs') %>
-
 <section class="pcoded-main-container">
     <div class="pcoded-content">
-
         <!-- Header -->
         <div class="page-header">
             <div class="page-block">
@@ -15,31 +13,24 @@
                 </div>
             </div>
         </div>
-
         <!-- Form -->
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="card">
                     <div class="card-body">
-
                         <h4 class="text-center">Create Task</h4>
                         <hr>
-
                         <form action="/admin/addtask" method="POST">
-
                             <!-- Task Name -->
                             <div class="form-group mb-3">
                                 <label>Task Name</label>
                                 <input type="text" name="name" class="form-control" placeholder="Enter task name" required>
                             </div>
-
                             <!-- Description -->
                             <div class="form-group mb-3">
                                 <label>Description</label>
                                 <textarea name="description" class="form-control" rows="3" placeholder="Enter task description"></textarea>
-                            </div>
-
-                            <!-- Assign To Employee -->
+                            </div>                            <!-- Assign To Employee -->
                             <div class="form-group mb-3">
                                 <label>Assign To Employee</label>
                                 <select name="assignedTo" class="form-control">
@@ -50,20 +41,16 @@
                                     <% }) %>
                                 </select>
                             </div>
-
                             <!-- Buttons -->
                             <div class="mt-3">
                                 <button type="submit" class="btn btn-success">Create Task</button>
                                 <a href="/admin/viewtasks" class="btn btn-secondary">Back</a>
                             </div>
-
                         </form>
-
                     </div>
                 </div>
             </div>
         </div>
-
     </div>
 </section>
  <script>
@@ -90,6 +77,4 @@
     <!-- [ Main Content ] end -->
     <!-- Warning Section start -->
     <!-- Older IE warning message -->
-
-
 <%- include('../../partials/footer.ejs') %>

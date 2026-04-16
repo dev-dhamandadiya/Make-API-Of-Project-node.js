@@ -1,16 +1,14 @@
 import mongoose from "mongoose"
 import envConfig from "./dotenv.js";
 
-const db = async (req,res)=>{
+const db = async (req, res) => {
     try {
-       await mongoose.connect(process.env.MONGODB_URL);
-       console.log("DataBase Connected");
-       
+        await mongoose.connect(process.env.MONGODB_URL);
+        console.log("DataBase Connected");
     } catch (error) {
         console.log(error.message);
-        
-        console.log("dataBase is not Connected");
 
+        console.log("dataBase is not Connected");
     }
 }
 

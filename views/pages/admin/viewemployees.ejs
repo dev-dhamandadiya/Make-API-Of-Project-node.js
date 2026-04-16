@@ -1,89 +1,74 @@
 <%- include('../../partials/header.ejs') %>
-    <!-- [ Main Content ] start -->
-    <section class="pcoded-main-container">
-        <div class="pcoded-content">
-            <!-- [ breadcrumb ] start -->
-            <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-12">
-                            <div class="page-header-title">
-                                <h5 class="m-b-10">Bootstrap Basic Tables</h5>
-                            </div>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
-                                <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
-                                <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li>
-                            </ul>
+<!-- [ Main Content ] start -->
+<section class="pcoded-main-container">
+    <div class="pcoded-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Bootstrap Basic Tables</h5>
                         </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/"><i class="feather icon-home"></i></a></li>
+                            <li class="breadcrumb-item"><a href="#!">Bootstrap Table</a></li>
+                            <li class="breadcrumb-item"><a href="#!">Basic Tables</a></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-            <!-- [ breadcrumb ] end -->
-            <!-- [ Main Content ] start -->
-            <div class="row">
-
-                <!-- [ stiped-table ] start -->
-                <div class="col-xl-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="text-center">View employee Table</h5>
-                        </div>
-                        <div class="card-body table-border-style">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Sr.No</th>
-                                            <th>Employee Name</th>
-                                            <th>Employee Email</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <% employees.forEach((employee, index)=> { %>
-
-                                            <tr>
-                                                <td>
-                                                    <%= index + 1 %>
-                                                </td>
-
-                                                <td>
-                                                    <%= employee.name %>
-                                                </td>
-                                                 <td>
-                                                    <%= employee.email %>
-                                                </td>
-                                                 
-                                                <td>
-
-                                                    <a href="/admin/editEmployee/<%= employee._id %>"
-                                                        class="btn btn-success btn-sm">
-                                                        Edit
-                                                    </a>
-
-                                                    <a href="/admin/deleteEmployee/<%= employee._id %>"
-                                                        class="btn btn-danger btn-sm">
-                                                        Delete
-                                                    </a>
-                                                </td>
-                                            </tr>
-
-                                            <% }); %>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- [ stiped-table ] end -->
-
-                <!-- [ Background-Utilities ] end -->
-            </div>
-            <!-- [ Main Content ] end -->
         </div>
-    </section>
-    <!-- [ Main Content ] end -->
-    <!-- Warning Section start -->
-    <!-- Older IE warning message -->
-    <%- include('../../partials/footer.ejs') %>
+        <!-- [ breadcrumb ] end -->
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <!-- [ stiped-table ] start -->
+            <div class="col-xl-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="text-center">View employee Table</h5>
+                    </div>
+                    <div class="card-body table-border-style">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Sr.No</th>
+                                        <th>Employee Name</th>
+                                        <th>Employee Email</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% employees.forEach((employee, index)=> { %>
+                                        <tr>
+                                            <td><%= index + 1 %></td>
+                                            <td><%= employee.name %></td>
+                                            <td><%= employee.email %></td>
+                                            <td>
+                                                <a href="/admin/editEmployee/<%= employee._id %>"
+                                                    class="btn btn-success btn-sm">Edit
+                                                </a>
+                                                <a href="/admin/deleteEmployee/<%= employee._id %>"
+                                                    class="btn btn-danger btn-sm">Delete
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ stiped-table ] end -->
+
+            <!-- [ Background-Utilities ] end -->
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</section>
+<!-- [ Main Content ] end -->
+<!-- Warning Section start -->
+<!-- Older IE warning message -->
+<%- include('../../partials/footer.ejs') %>
